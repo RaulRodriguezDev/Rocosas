@@ -20,5 +20,20 @@ namespace Rocosa.Controllers
 
             return View(categories);
         }
+
+        // Get
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Category category)
+        {
+            _dbContext.Category.Add(category);
+            _dbContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }
