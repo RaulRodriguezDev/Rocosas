@@ -12,7 +12,7 @@ namespace Rocosa.Models
         [Required(ErrorMessage ="The name is required")]
         public string Name  { get; set; }
 
-        [Required(ErrorMessage ="The order field is required"]
+        [Required(ErrorMessage ="The order field is required")]
         [Range(1,int.MaxValue,ErrorMessage ="The order must be greater than 0")]
         public int ShowOrder { get; set; }
     }

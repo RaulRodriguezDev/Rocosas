@@ -40,5 +40,37 @@ namespace Rocosa.Controllers
 
             return View(category);
         }
+
+        public IActionResult Edit(int? id)
+        {
+            if(id==null || id == 0)
+            {
+                return NotFound();
+            }
+
+            var category = _dbContext.Category.Find(id);
+
+            if(category == null)
+            {
+                return NotFound();
+            }
+
+            return View(category);
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Category category)
+        {
+            if(ModelState.IsValid)
+            {
+                _dbContext.Category.Update(category);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(category);
+        }
     }
 }
