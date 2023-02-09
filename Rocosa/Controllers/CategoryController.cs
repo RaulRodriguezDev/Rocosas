@@ -72,5 +72,30 @@ namespace Rocosa.Controllers
 
             return View(category);
         }
+
+        public IActionResult Delete(int? id)
+        {
+            if(id==0 ||id==null)
+            {
+                return NotFound();
+            }
+
+            var category = _dbContext.Category.Find(id);
+
+            if(category == null )
+            {
+                return NotFound();
+            }
+
+            return View(category);
+        }
+        [HttpPost]
+        public IActionResult Delete(Category category)
+        {
+            _dbContext.Remove(category);
+            _dbContext.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
     }
 }
