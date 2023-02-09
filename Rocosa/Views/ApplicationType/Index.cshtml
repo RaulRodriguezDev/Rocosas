@@ -30,7 +30,17 @@
                 {
                             <tr>
                                 <th width="50%">@item.Name</th>
-                                <th></th>
+                                <th class="text-center">
+                                    <div class="w-75 btn-group" role="group">
+                                        <a asp-controller="ApplicationType" asp-action="Edit" asp-route-Id="@item.Id" class="btn btn-primary mx-2">
+
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </a>
+                                        <a asp-controller="ApplicationType" asp-action="Delete" asp-route-Id="@item.Id" class="btn btn-danger mx-2">
+                                             <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </th>
                             </tr>
                 }
                 </tbody>

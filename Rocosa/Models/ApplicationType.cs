@@ -7,6 +7,7 @@ namespace Rocosa.Models
         [Key]
         public int Id { get; set; }
 
+        [Required(ErrorMessage ="The Application Name is required",AllowEmptyStrings =false)] 
         public string Name { get; set; }
     }
 }

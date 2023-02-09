@@ -1,28 +1,29 @@
 ﻿@model Rocosa.Models.ApplicationType
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Delete";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<form method="post" asp-action="Create">
+<form method="post" asp-action="Delete">
+    <input asp-for="Id" hidden />
     <div class="border p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
-            <h2 class="text-info p-lg-3">New Application Type</h2>
+            <h2 class="text-info p-lg-3">Are you sure do you want to delete this application type?</h2>
         </div>
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
                     <label asp-for="Name" class="form-label">Application Type Name</label>
-                    <input asp-for="Name" class="form-control"/>
+                    <input asp-for="Name" class="form-control" disabled/>
                 </div>
             </div>
             <br />
             <div class="d-grid gap-2 d-md-block">
-                <button type="submit" class="btn btn-primary">Create New</button>
+                <button type="submit" class="btn btn-primary">Delete</button>
                 <a asp-controller="ApplicationType" asp-action="Index" class="btn btn-success">Back</a>
             </div>
         </div>
     </div>
 </form>
-
 
