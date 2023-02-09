@@ -31,9 +31,14 @@ namespace Rocosa.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category category)
         {
-            _dbContext.Category.Add(category);
-            _dbContext.SaveChanges();
-            return RedirectToAction("Index");
+            if(ModelState.IsValid)
+            {
+                _dbContext.Category.Add(category);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(category);
         }
     }
 }
