@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Rocosa.Data;
 using Rocosa.Models;
+using Rocosa.Models.ViewModels;
 
 namespace Rocosa.Controllers
 {
@@ -23,22 +25,45 @@ namespace Rocosa.Controllers
         // Get
         public IActionResult Upsert(int? id)
         {
-            Product product = new Product();
+            //IEnumerable<SelectListItem> categoriesDropDown = _dbContext.Category.Select(c => new SelectListItem
+            //{
+            //    Text = c.Name,
+            //    Value = c.Id.ToString(),
+            //});
+
+            //ViewBag.Categories = categoriesDropDown;
+
+            //Product product = new Product();
+
+            ProductViewModel productViewModel = new ProductViewModel()
+            {
+                Product = new Product(),
+                Categories = _dbContext.Category.Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                }),
+                ApplicationTypeList = _dbContext.ApplicationType.Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                })
+            };
 
             if(id==null)
             {
-                return View(product);
+                return View(productViewModel);
             }
             else
             {
-                product=_dbContext.Products.Find(id);
+                productViewModel.Product =_dbContext.Products.Find(id);
 
-                if(product == null)
+                if (productViewModel.Product == null)
                 {
                     return NotFound();
                 }
 
-                return View(product);
+                return View(productViewModel);
             }
         }
     }
