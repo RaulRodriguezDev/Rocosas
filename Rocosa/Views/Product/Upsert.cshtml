@@ -1,0 +1,74 @@
+﻿@model Rocosa.Models.Product
+@{
+    var title = "Create New Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form method="post" asp-action="Upsert" enctype="multipart/form-data">
+    @if(Model.Id!=0)
+    {
+        title = "Edit Product";
+        <input asp-for="Id" hidden/>
+    }
+
+    <div class="border p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <h2 class="text-info">@title</h2>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label">Product Name</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="ProductPrice" class="form-label">Price</label>
+                            <input asp-for="ProductPrice" class="form-control" />
+                            <span asp-validation-for="ProductPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="ShortDescription" class="form-label">Description</label>
+                            <input asp-for="ShortDescription" class="form-control" />
+                            <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="ImageUrl" class="form-label">Product Name</label>
+                            <input type="file" name="files" id="imageId" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="CategoryId" class="form-label">Category</label>
+                            <select asp-for="CategoryId" asp-items="@ViewBag.Categories" class="form-select">
+                                <option disabled selected>--Choose a category</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="d-grid gap-2 d-md-block">
+                        @if(Model.Id!=0)
+                        {
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary">Create</button> 
+                        }
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
