@@ -1,0 +1,81 @@
+﻿@model Rocosa.Models.Product
+@{
+    var title = "Do you want to delete this item?";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form method="post" asp-action="Delete">
+
+    <input asp-for="Id" hidden/>
+
+    <div class="border p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <h2 class="text-danger">@title</h2>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label">Product Name</label>
+                            <input asp-for="Name" class="form-control" disabled/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="ProductPrice" class="form-label">Price</label>
+                            <input asp-for="ProductPrice" class="form-control" disabled/>
+                        </div>
+                    </div>
+                    <div class="row" hidden>
+                        <div class="col-md-6">
+                            <label asp-for="ShortDescription" class="form-label">Description</label>
+                            <textarea asp-for="ShortDescription" class="form-control summernote"></textarea>
+                        </div>
+                    </div>
+                    <div class="row" hidden>
+                        <div class="col-md-6">
+                            <label asp-for="ImageUrl" class="form-label">Product Name</label>
+                            <input asp-for="ImageUrl" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="CategoryId" class="form-label">Category</label>
+                            <input asp-for="CategoryId" hidden />
+                            <input asp-for="Category.Name" class="form-control" disabled/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="ApplicationTypeId" class="form-label">Category</label>
+                            <input asp-for="ApplicationTypeId" hidden />
+                            <input asp-for="ApplicationType.Name" class="form-control" disabled />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="d-grid gap-2 d-md-block">
+                        @if (Model.Id != 0)
+                        {
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                        }
+                        else
+                        {
+                                <button type="submit" onclick="return validateImageUrl()" class="btn btn-primary">Create</button> 
+                        }
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-secondary">Back</a>
+                    </div>
+                </div>
+            </div>
+            @if (Model.Id != 0)
+            {
+                    <div class="col-4">
+                        <img src="@WebConstants.ImgRoute@Model.ImageUrl" width="100%" style="border-radius:5px; border:1px solid #bbb" />
+                    </div>
+            }
+        </div>
+    </div>
+</form>
+
+

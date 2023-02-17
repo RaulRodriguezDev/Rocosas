@@ -20,18 +20,18 @@ namespace Rocosa.Models
         [Range(1,double.MaxValue,ErrorMessage ="The price must be major than 0")]
         public double ProductPrice { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         // Foreign Key
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
-        public virtual Category Category { get; set; }
+        public virtual Category? Category { get; set; }
 
         public int ApplicationTypeId { get; set; }
 
         [ForeignKey("ApplicationTypeId")]
-        public virtual ApplicationType ApplicationType { get; set; }
+        public virtual ApplicationType? ApplicationType { get; set; }
 
     }
 }
