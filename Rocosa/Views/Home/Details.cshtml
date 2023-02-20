@@ -1,7 +1,7 @@
 ﻿@model Rocosa.Models.ViewModels.DetailsViewModel
 <div class="">
     <form method="post">
-
+        <input asp-for="@Model.Product.Id" hidden />
         <div class="container backgroundWhite pt-4"  >
             <div class="card" style="border:1px solid #000000; ">
                 <div class="card-header bg-dark text-light ml-0 row container" style="border-radius: 0px;">
@@ -25,7 +25,6 @@
                                         <span class="badge p-3 border text-dark" style="background-color:lavenderblush">@Model.Product.Category.Name</span>
                                         <span class="badge p-3 border text-dark" style="background-color:azure">@Model.Product.ApplicationType.Name</span>
                                         <h3 class="text-success"></h3>
-
                                         <p class="text-secondary">@Html.Raw(Model.Product.ShortDescription)</p>
                                     </div>
 
@@ -42,14 +41,12 @@
                         <div class="col-12 col-md-6 ">
                             @if (Model.ExistInCarShop)
                             {
-                                   <a asp-action="RemoverDeCarro" asp-route-Id="@Model.Product.Id" class="btn btn-warning btn-square form-control btn-lg" style="height:50px;">Remove to the Chart</a>	
+                                   <a asp-action="RemoveFromCart" asp-route-Id="@Model.Product.Id" class="btn btn-warning btn-square form-control btn-lg" style="height:50px;">Remove to the Chart</a>	
                             }
                             else
                             {
-                                  <button type="submit" class="btn btn-info form-control btn-lg" style="height:50px;">Add to chart</button>
-                            }
-
-
+                                   <button type="submit" asp-route-Id="@Model.Product.Id" class="btn btn-info form-control btn-lg" style="height:50px;">Add to chart</button>
+                            } 
                         </div>
                     </div>
                 </div>

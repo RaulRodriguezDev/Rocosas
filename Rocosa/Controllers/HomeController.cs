@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Rocosa.Data;
 using Rocosa.Models;
 using Rocosa.Models.ViewModels;
+using Rocosa.Utilities;
 using System.Diagnostics;
 
 namespace Rocosa.Controllers
@@ -32,6 +34,14 @@ namespace Rocosa.Controllers
 
         public IActionResult Details(int? id)
         {
+            List<ShopCart> shopCartItems = new List<ShopCart>();
+
+            if (HttpContext.Session.Get<IEnumerable<ShopCart>>(WebConstants.CartShopSession) != null
+                && HttpContext.Session.Get<IEnumerable<ShopCart>>(WebConstants.CartShopSession).Count() > 0)
+            {
+                shopCartItems = HttpContext.Session.Get<List<ShopCart>>(WebConstants.CartShopSession);
+            }
+
             DetailsViewModel detailsViewModel = new DetailsViewModel()
             {
                 Product = _dbContext.Products.Include(c => c.Category).Include(t => t.ApplicationType)
@@ -39,8 +49,55 @@ namespace Rocosa.Controllers
                 ExistInCarShop = false
             };
 
+            foreach(var item in shopCartItems)
+            {
+                if(item.ProductId== id)
+                {
+                    detailsViewModel.ExistInCarShop = true;
+                }
+            }
+
             return View(detailsViewModel);
         }
+
+        [HttpPost,ActionName("Details")]
+        public IActionResult Detials(int id)
+        {
+            List<ShopCart> shopCartItems= new List<ShopCart>();
+
+            if(HttpContext.Session.Get<IEnumerable<ShopCart>>(WebConstants.CartShopSession) != null 
+                && HttpContext.Session.Get<IEnumerable<ShopCart>>(WebConstants.CartShopSession).Count() > 0)
+            {
+                shopCartItems = HttpContext.Session.Get<List<ShopCart>>(WebConstants.CartShopSession);
+            }
+            shopCartItems.Add(new ShopCart { ProductId = id });
+            HttpContext.Session.Set(WebConstants.CartShopSession, shopCartItems);
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult RemoveFromCart(int id)
+        {
+            List<ShopCart> shopCartItems = new List<ShopCart>();
+
+            if (HttpContext.Session.Get<IEnumerable<ShopCart>>(WebConstants.CartShopSession) != null
+                && HttpContext.Session.Get<IEnumerable<ShopCart>>(WebConstants.CartShopSession).Count() > 0)
+            {
+                shopCartItems = HttpContext.Session.Get<List<ShopCart>>(WebConstants.CartShopSession);
+            }
+
+            var productToRemove = shopCartItems.SingleOrDefault(x => x.ProductId == id);
+
+            if(productToRemove != null)
+            {
+                shopCartItems.Remove(productToRemove);
+            }
+
+            HttpContext.Session.Set(WebConstants.CartShopSession, shopCartItems);
+
+            return RedirectToAction("Index");
+        }
+
         public IActionResult Privacy()
         {
             return View();

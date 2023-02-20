@@ -16,7 +16,7 @@
                     <span class="badge p-2 border w-100 text-dark" style="background-color:aliceblue">@Model.ApplicationType.Name</span>
                 </div>
                 <div class="col-12 pt-2" style="font-size:13px; text-align:justify" >
-                    @Html.Raw(@Model.ShortDescription);
+                    @Html.Raw(@Model.ShortDescription)
                 </div>
                 <div class="col-12 p-1">
                     <a asp-action="Details" asp-route-Id="@Model.Id" class="btn btn-dark form-control btn-sm p-2" style="height:40px">Details</a>

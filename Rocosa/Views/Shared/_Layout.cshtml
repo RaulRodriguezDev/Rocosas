@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccesor
+@using Rocosa.Utilities
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -39,6 +43,24 @@
                                     <a class="dropdown-item" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
                                 </li>
                             </ul>
+                        </li>
+                        <li >
+                            @if (HttpContextAccesor.HttpContext.Session.Get<List<ShopCart>>(WebConstants.CartShopSession) != null)
+                            {
+                                            <a asp-action="Index" asp-controller="Cart" class="nav-link">
+                                    @{
+                                        var count = HttpContextAccesor.HttpContext.Session
+                                                .Get<List<ShopCart>>(WebConstants.CartShopSession).Count();
+                                    }
+                                                <i class="fas fa-shopping-cart"></i> &nbsp; (@count)
+                                            </a>
+                            }
+                            else
+                            {
+                                            <a href="#" class="nav-link">
+                                                <i class="fas fa-shopping-cart"></i> &nbsp; (0)
+                                            </a>
+                            }
                         </li>
                     </ul>
                 </div>
