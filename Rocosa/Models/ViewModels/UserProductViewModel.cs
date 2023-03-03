@@ -8,6 +8,6 @@
         }
         public UserApplication UserApplication { get; set; }
 
-        public IEnumerable<Product> ProductList { get; set; }
+        public IList<Product> ProductList { get; set; }
     }
 }
