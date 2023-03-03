@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Rocosa.Data;
 using Rocosa.Models;
 
 namespace Rocosa.Controllers
 {
+    [Authorize(Roles =WebConstants.AdminRole)]
     public class ApplicationTypeController : Controller
     {
         public ApplicationDbContext _dbContext;

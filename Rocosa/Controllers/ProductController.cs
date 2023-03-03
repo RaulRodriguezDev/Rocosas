@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Rocosa.Data;
@@ -7,6 +8,7 @@ using Rocosa.Models.ViewModels;
 
 namespace Rocosa.Controllers
 {
+    [Authorize(Roles =WebConstants.AdminRole)]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
