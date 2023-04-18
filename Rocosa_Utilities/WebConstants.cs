@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata;
-
-namespace Rocosa
+﻿namespace Rocosa_Utilities
 {
     public class WebConstants
     {
@@ -8,7 +6,5 @@ namespace Rocosa
         public static string CartShopSession = "CartShopSession";
         public const string AdminRole = "Admin";
         public static string ClientRole = "Client";
-        public const string CategoryName = "Category";
-        public const string ApplicationTypeName = "ApplicationType";
     }
 }

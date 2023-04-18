@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rocosa.Data;
+using Rocosa.Data.Repository.IRepository;
 using Rocosa.Models;
 using System.Collections;
 
@@ -7,16 +8,16 @@ namespace Rocosa.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryController(ApplicationDbContext dbContext)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            _dbContext = dbContext;
+            _categoryRepository= categoryRepository;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<Category> categories = _dbContext.Category;
+            IEnumerable<Category> categories = _categoryRepository.GetAll();
 
             return View(categories);
         }
@@ -33,8 +34,8 @@ namespace Rocosa.Controllers
         {
             if(ModelState.IsValid)
             {
-                _dbContext.Category.Add(category);
-                _dbContext.SaveChanges();
+                _categoryRepository.Add(category);
+                _categoryRepository.Record();
                 return RedirectToAction("Index");
             }
 
@@ -48,7 +49,7 @@ namespace Rocosa.Controllers
                 return NotFound();
             }
 
-            var category = _dbContext.Category.Find(id);
+            var category = _categoryRepository.GetById(id.GetValueOrDefault());
 
             if(category == null)
             {
@@ -65,8 +66,8 @@ namespace Rocosa.Controllers
         {
             if(ModelState.IsValid)
             {
-                _dbContext.Category.Update(category);
-                _dbContext.SaveChanges();
+                _categoryRepository.Update(category);
+                _categoryRepository.Record();
                 return RedirectToAction("Index");
             }
 
@@ -80,7 +81,7 @@ namespace Rocosa.Controllers
                 return NotFound();
             }
 
-            var category = _dbContext.Category.Find(id);
+            var category = _categoryRepository.GetById(id.GetValueOrDefault());
 
             if(category == null )
             {
@@ -92,8 +93,8 @@ namespace Rocosa.Controllers
         [HttpPost]
         public IActionResult Delete(Category category)
         {
-            _dbContext.Remove(category);
-            _dbContext.SaveChanges();
+            _categoryRepository.Remove(category);
+            _categoryRepository.Record();
 
             return RedirectToAction("Index");
         }

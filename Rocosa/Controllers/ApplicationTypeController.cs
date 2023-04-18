@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rocosa.Data;
+using Rocosa.Data.Repository.IRepository;
 using Rocosa.Models;
 
 namespace Rocosa.Controllers
@@ -8,16 +9,16 @@ namespace Rocosa.Controllers
     [Authorize(Roles =WebConstants.AdminRole)]
     public class ApplicationTypeController : Controller
     {
-        public ApplicationDbContext _dbContext;
+        private readonly IApplicationTypeRepository _applicationTypeRepository;
 
-        public ApplicationTypeController(ApplicationDbContext dbContext)
+        public ApplicationTypeController(IApplicationTypeRepository applicationTypeRepository)
         {
-            _dbContext = dbContext;
+           _applicationTypeRepository= applicationTypeRepository;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<ApplicationType> applicationTypes = _dbContext.ApplicationType;
+            IEnumerable<ApplicationType> applicationTypes = _applicationTypeRepository.GetAll();
             return View(applicationTypes);
         }
 
@@ -30,8 +31,8 @@ namespace Rocosa.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(ApplicationType applicationType)
         {
-            _dbContext.ApplicationType.Add(applicationType);
-            _dbContext.SaveChanges();
+            _applicationTypeRepository.Add(applicationType);
+            _applicationTypeRepository.Record();
 
             return RedirectToAction("Index");
         }
@@ -43,7 +44,7 @@ namespace Rocosa.Controllers
                 return NotFound();
             }
 
-            var applicationType = _dbContext.ApplicationType.Find(id);
+            var applicationType = _applicationTypeRepository.GetById(id.GetValueOrDefault());
 
             if (applicationType == null)
             {
@@ -58,8 +59,9 @@ namespace Rocosa.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(ApplicationType applicationType)
         {
-            _dbContext.ApplicationType.Update(applicationType);
-            _dbContext.SaveChanges();
+            _applicationTypeRepository.Update(applicationType);
+            _applicationTypeRepository.Record();
+
             return RedirectToAction("Index");
         }
 
@@ -70,7 +72,7 @@ namespace Rocosa.Controllers
                 return NotFound();
             }
 
-            var applicationType = _dbContext.ApplicationType.Find(id);
+            var applicationType = _applicationTypeRepository.GetById(id.GetValueOrDefault());
 
             if(applicationType == null)
             {
@@ -84,8 +86,8 @@ namespace Rocosa.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(ApplicationType applicationType)
         {
-            _dbContext.ApplicationType.Remove(applicationType);
-            _dbContext.SaveChanges();
+            _applicationTypeRepository.Remove(applicationType);
+            _applicationTypeRepository.Record();
 
             return RedirectToAction("Index");
         }

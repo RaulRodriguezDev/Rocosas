@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Rocosa.Data;
+using Rocosa.Data.Repository.IRepository;
 using Rocosa.Models;
 using Rocosa.Models.ViewModels;
 
@@ -11,18 +12,18 @@ namespace Rocosa.Controllers
     [Authorize(Roles =WebConstants.AdminRole)]
     public class ProductController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IProductRepository _productRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(ApplicationDbContext dbContext,IWebHostEnvironment webHostEnvironment)
+        public ProductController(IProductRepository productRepository,IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnvironment = webHostEnvironment;
-            _dbContext = dbContext;
+            _productRepository= productRepository;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<Product> products = _dbContext.Products.Include(c=>c.Category).Include(a=>a.ApplicationType);
+            IEnumerable<Product> products = _productRepository.GetAll(includeProperties: "Category,ApplicationType");
             return View(products);
         }
 
@@ -42,16 +43,8 @@ namespace Rocosa.Controllers
             ProductViewModel productViewModel = new ProductViewModel()
             {
                 Product = new Product(),
-                Categories = _dbContext.Category.Select(c => new SelectListItem
-                {
-                    Text = c.Name,
-                    Value = c.Id.ToString()
-                }),
-                ApplicationTypeList = _dbContext.ApplicationType.Select(c => new SelectListItem
-                {
-                    Text = c.Name,
-                    Value = c.Id.ToString()
-                })
+                Categories = _productRepository.GetAll(WebConstants.CategoryName),
+                ApplicationTypeList = _productRepository.GetAll(WebConstants.ApplicationTypeName)
             };
 
             if(id==null)
@@ -60,7 +53,7 @@ namespace Rocosa.Controllers
             }
             else
             {
-                productViewModel.Product =_dbContext.Products.Find(id);
+                productViewModel.Product = _productRepository.GetById(id.GetValueOrDefault());
 
                 if (productViewModel.Product == null)
                 {
@@ -91,11 +84,12 @@ namespace Rocosa.Controllers
                     }
 
                     productViewModel.Product.ImageUrl = fileName + extension;
-                    _dbContext.Products.Add(productViewModel.Product);
+                    _productRepository.Add(productViewModel.Product);
+
                 }
                 else
                 {
-                    var objProduct = _dbContext.Products.AsNoTracking().FirstOrDefault(p => p.Id== productViewModel.Product.Id);
+                    var objProduct = _productRepository.GetFirst(p => p.Id == productViewModel.Product.Id,isTracking: false);
 
                     if(files.Count >0)
                     {
@@ -122,11 +116,14 @@ namespace Rocosa.Controllers
                     {
                         productViewModel.Product.ImageUrl = objProduct.ImageUrl;
                     }
-                    _dbContext.Products.Update(productViewModel.Product);
+                    _productRepository.Update(productViewModel.Product);
                 }
-                _dbContext.SaveChanges();
+                _productRepository.Record();
                 return RedirectToAction("Index");
             }
+
+            productViewModel.Categories = _productRepository.GetAll(WebConstants.CategoryName);
+            productViewModel.ApplicationTypeList = _productRepository.GetAll(WebConstants.ApplicationTypeName);
 
             return View(productViewModel);
         }
@@ -137,7 +134,7 @@ namespace Rocosa.Controllers
             if (id == null || id == 0)
                 return NotFound();
 
-            Product product = _dbContext.Products.Include(c => c.Category).Include(t => t.ApplicationType).FirstOrDefault(p => p.Id==id);
+            Product product = _productRepository.GetFirst(p => p.Id == id, includeProperties: "Category,ApplicationType");
 
             if(product == null)
                 return NotFound();
@@ -160,8 +157,8 @@ namespace Rocosa.Controllers
                 System.IO.File.Delete(previousFile);
             }
 
-            _dbContext.Products.Remove(product);
-            _dbContext.SaveChanges();
+            _productRepository.Remove(product);
+            _productRepository.Record();
 
             return RedirectToAction("Index");
         }
