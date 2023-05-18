@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Rocosa.Data;
+using Rocosa.Data.Repository.IRepository;
 using Rocosa.Models;
 using Rocosa.Models.ViewModels;
 using Rocosa.Utilities;
@@ -14,16 +15,25 @@ namespace Rocosa.Controllers
     [Authorize]
     public class ShoppingCartController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IEmailSender _emailSender;
+        private readonly IProductRepository _productRepository;
+        private readonly IUserApplicationRepository _userApplicationRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderDetailRepository _orderDetailRepository;
 
         [BindProperty]
         public UserProductViewModel UserProductViewModel { get; set; }
 
-        public ShoppingCartController(ApplicationDbContext dbContext, IWebHostEnvironment webHostEnvironment, IEmailSender emailSender)
+        public ShoppingCartController(ApplicationDbContext dbContext, IWebHostEnvironment webHostEnvironment, 
+            IEmailSender emailSender, IUserApplicationRepository userApplicationRepository, 
+            IProductRepository productRepository, IOrderRepository orderRepository,
+            IOrderDetailRepository orderDetailRepository)
         {
-            _dbContext = dbContext;
+            _orderRepository= orderRepository;
+            _orderDetailRepository= orderDetailRepository;
+            _userApplicationRepository = userApplicationRepository;
+            _productRepository= productRepository;
             _webHostEnvironment = webHostEnvironment;
             _emailSender = emailSender;
         }
@@ -39,7 +49,7 @@ namespace Rocosa.Controllers
             }
 
             List<int> prodcutsListInCart = shoppingCartList.Select(i => i.ProductId).ToList();
-            IEnumerable<Product> productsList = _dbContext.Products.Where(p => prodcutsListInCart.Contains(p.Id));
+            IEnumerable<Product> productsList = _productRepository.GetAll(p => prodcutsListInCart.Contains(p.Id));/*_dbContext.Products.Where(p => prodcutsListInCart.Contains(p.Id));*/
 
             return View(productsList);
         }
@@ -66,11 +76,11 @@ namespace Rocosa.Controllers
             }
 
             List<int> prodcutsListInCart = shoppingCartList.Select(i => i.ProductId).ToList();
-            IEnumerable<Product> productsList = _dbContext.Products.Where(p => prodcutsListInCart.Contains(p.Id));
+            IEnumerable<Product> productsList = _productRepository.GetAll(p => prodcutsListInCart.Contains(p.Id));
 
             UserProductViewModel = new UserProductViewModel()
             {
-                UserApplication = _dbContext.UserApplications.FirstOrDefault(u => u.Id == claim.Value),
+                UserApplication = _userApplicationRepository.GetFirst(u => u.Id == claim.Value),
                 ProductList = productsList.ToList()
             };
 
@@ -82,6 +92,8 @@ namespace Rocosa.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Overview(UserProductViewModel userProductViewModel)
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             var templateRoute = _webHostEnvironment.WebRootPath + Path.DirectorySeparatorChar.ToString()
                 + "templates" + Path.DirectorySeparatorChar.ToString() + "PlantillaOrden.html";
 
@@ -106,6 +118,30 @@ namespace Rocosa.Controllers
                 productListSb.ToString());
 
            await _emailSender.SendEmailAsync("",subject,messageBody);
+
+            Order order = new Order() 
+            {
+                UserApplicationId = claim.Value,
+                FullName = userProductViewModel.UserApplication.FullName,
+                Email= userProductViewModel.UserApplication.Email,
+                Phone= userProductViewModel.UserApplication.PhoneNumber,
+                OrderDate= DateTime.Now
+            };
+
+            _orderRepository.Add(order);
+            _orderRepository.Record();
+
+            foreach (var product in userProductViewModel.ProductList)
+            {
+                OrderDetail orderDetail = new OrderDetail()
+                {
+                    OrderId = order.Id,
+                    ProductId= product.Id
+                };
+                _orderDetailRepository.Add(orderDetail);
+            }
+            _orderDetailRepository.Record();
+             
            return RedirectToAction("Confirm");
         }
 

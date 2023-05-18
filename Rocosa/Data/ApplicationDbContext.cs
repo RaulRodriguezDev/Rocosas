@@ -15,5 +15,7 @@ namespace Rocosa.Data
         public DbSet<ApplicationType> ApplicationType { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<UserApplication> UserApplications { get; set; }
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderDetail> OrderDetail { get; set; }
     }
 }

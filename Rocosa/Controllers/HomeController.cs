@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Rocosa.Data;
+using Rocosa.Data.Repository.IRepository;
 using Rocosa.Models;
 using Rocosa.Models.ViewModels;
 using Rocosa.Utilities;
@@ -13,20 +14,23 @@ namespace Rocosa.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext,
+            ICategoryRepository categoryRepository, IProductRepository productRepository)
         {
             _logger = logger;
-            _dbContext = dbContext;
+            _categoryRepository= categoryRepository;
+            _productRepository= productRepository;
         }
 
         public IActionResult Index()
         {
             HomeViewModel homeViewModel = new HomeViewModel()
             {
-                Products = _dbContext.Products.Include(c => c.Category).Include(t => t.ApplicationType),
-                Categories = _dbContext.Category
+                Products = _productRepository.GetAll(includeProperties: "Category,ApplicationType"),
+                Categories = _categoryRepository.GetAll()
             };
 
             return View(homeViewModel);
@@ -44,8 +48,7 @@ namespace Rocosa.Controllers
 
             DetailsViewModel detailsViewModel = new DetailsViewModel()
             {
-                Product = _dbContext.Products.Include(c => c.Category).Include(t => t.ApplicationType)
-                                                .Where(p => p.Id == id).FirstOrDefault(),
+                Product = _productRepository.GetFirst(p => p.Id == id,includeProperties: "Category,ApplicationType"),
                 ExistInCarShop = false
             };
 
