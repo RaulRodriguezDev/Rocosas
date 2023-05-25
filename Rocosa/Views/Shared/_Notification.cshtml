@@ -1,0 +1,21 @@
+﻿@using Rocosa
+
+@if(TempData[WebConstants.Successful] != null)
+{
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.success('@TempData[WebConstants.Successful]')
+    </script>   
+}
+
+@if (TempData[WebConstants.Error] != null)
+{
+            <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script type="text/javascript">
+            toastr.success('@TempData[WebConstants.Error]')
+        </script>   
+}
+
+

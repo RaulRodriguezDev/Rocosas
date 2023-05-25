@@ -10,5 +10,7 @@ namespace Rocosa
         public static string ClientRole = "Client";
         public const string CategoryName = "Category";
         public const string ApplicationTypeName = "ApplicationType";
+        public const string Successful = "Successful";
+        public const string Error = "Error";
     }
 }

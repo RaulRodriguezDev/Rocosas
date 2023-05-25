@@ -36,9 +36,10 @@ namespace Rocosa.Controllers
             {
                 _categoryRepository.Add(category);
                 _categoryRepository.Record();
+                TempData[WebConstants.Successful] = "Category created successfully";
                 return RedirectToAction("Index");
             }
-
+            TempData[WebConstants.Error] = "Error while creating a new category";
             return View(category);
         }
 
