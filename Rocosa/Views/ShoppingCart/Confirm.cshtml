@@ -1,6 +1,19 @@
-﻿<div class="text-center">
-    <h1 class="text-info">Confirmation</h1>
-    <p>We've received your inquiry. Our staff's member will contact you as soon</p>
+﻿@model Rocosa.Models.Sale
+
+<div class="text-center">
+
+    @if(Model != null)
+    {
+        <h1 class="text-info">Sale Created</h1>
+        <p>Sale @Model.Id Created Successfully</p>
+    }
+
+    else
+    {
+        <h1 class="text-info">Confirmation</h1>
+        <p>We've received your inquiry. Our staff's member will contact you as soon</p>
+    }
+
     <img src="/img/patio.jpg" width="80%" />
 </div>
 

@@ -1,6 +1,7 @@
-﻿@model Rocosa.Models.ViewModels.UserProductViewModel
+﻿@using Rocosa
+@model Rocosa.Models.ViewModels.UserProductViewModel
 
-<form method="post">
+<form id="payment-form" method="post">
     <br />
     <div class="backgroundWhiteBorder">
         <div class="container">
@@ -28,7 +29,7 @@
                                         <label>Full Name</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="UserApplication.FullName" type="text" class="form-control" />
+                                        <input asp-for="UserApplication.FullName" type="text" class="form-control" id="fullName"/>
                                         <span asp-validation-for="UserApplication.FullName" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -37,7 +38,7 @@
                                         <label>Phone</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="UserApplication.PhoneNumber" type="text" class="form-control" />
+                                        <input asp-for="UserApplication.PhoneNumber" type="text" class="form-control" id="phoneNumber"/>
                                         <span asp-validation-for="UserApplication.PhoneNumber" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -46,8 +47,26 @@
                                         <label>Email</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="UserApplication.Email" type="text" class="form-control" />
+                                        <input asp-for="UserApplication.Email" type="text" class="form-control" id="email"/>
                                         <span asp-validation-for="UserApplication.Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row my-1">
+                                    <div class="col-3">
+                                        <label>Address</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input asp-for="UserApplication.Address" type="text" class="form-control" id="address"/>
+                                        <span asp-validation-for="UserApplication.Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row my-1">
+                                    <div class="col-3">
+                                        <label>City</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input asp-for="UserApplication.City" type="text" class="form-control" id="city"/>
+                                        <span asp-validation-for="UserApplication.City" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
@@ -57,28 +76,73 @@
                                         <span class="text-info">Overview:</span>
                                     </h4>
                                     <ul class="list-group mb-3">
+                                        @{var total = 0.0;}
                                         @for (int i=0; i<Model.ProductList.Count();i++)
                                         {
                                                <li class="list-group-item d-flex justify-content-between">
                                                    <input type="hidden" asp-for="@Model.ProductList[i].Id"/>
                                                    <input type="hidden" asp-for="@Model.ProductList[i].Name"/>
+                                                   <input type="hidden" asp-for="@Model.ProductList[i].ProductPrice"/>
+                                                   <input type="hidden" asp-for="@Model.ProductList[i].TempSquareMeter"/>
                                                 <div>
                                                     <h6 class="my-0">@Model.ProductList[i].Name</h6>
-                                                    <small class="text-muted">Precio por m &sup2: @Model.ProductList[i].ProductPrice</small>
+                                                    @if (User.IsInRole(WebConstants.AdminRole))
+                                                    {
+                                                        <small class="text-muted">m &sup2: @Model.ProductList[i].TempSquareMeter</small>
+                                                    }
+                                                    else
+                                                    {
+                                                        <small class="text-muted">Precio por m &sup2: @Model.ProductList[i].ProductPrice</small>
+                                                    }
+   
                                                 </div>
-                                            </li> 
+                                                @if (User.IsInRole(WebConstants.AdminRole))
+                                                {
+                                                    <span class="text-muted">$@(Model.ProductList[i].ProductPrice * Model.ProductList[i].TempSquareMeter)</span>
+                                                }
+                                            </li>
+                                            total += Model.ProductList[i].ProductPrice * Model.ProductList[i].TempSquareMeter;
+
+                                            @if (User.IsInRole(WebConstants.AdminRole))
+                                            {
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <small class="text-info">Total (USD)</small>
+                                                    <strong class="text-info">$@total</strong>
+                                                </li>
+                                            }
                                         }
 
                                     </ul>
                                 </div>
+
+                                @if (User.IsInRole(WebConstants.AdminRole))
+                                {
+                                    <div class="col-12">
+                                        <div class="wrapper">
+                                            <div class="chekout container">
+                                                <div id="dropin-container"></div>
+                                                    <input type="hidden" id="nonce" name="payment_method_nonce" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
                             </div>
+
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="row">
                         <div class="col-12 col-md-5 offset-md-7">
-                            <button type="submit" class="btn btn-primary form-control">Send Order</button>
+                            @if (User.IsInRole(WebConstants.AdminRole))
+                            {
+                                <button type="submit" onclick="return validateData()" class="btn btn-success form-control">Send Sale</button>
+                            }
+                            else
+                            {
+                                <button type="submit" onclick="return validateData()" class="btn btn-primary form-control">Send Order</button>
+                            }
                         </div>
                     </div>
                 </div>
@@ -90,5 +154,54 @@
 
 @section Scripts{
         <partial name="_ValidationScriptsPartial" />
+        <script src="https://js.braintreegateway.com/web/dropin/1.37.0/js/dropin.min.js"></script>
+        <script>
+            var objectForm = {
+                fullName : document.getElementById('fullName'),
+                phoneNumber: document.getElementById('phoneNumber'),
+                email: document.getElementById('email'),
+                address: document.getElementById('address'),
+                city: document.getElementById('city')
+            }
+
+            function validateData(){
+                if(objectForm.fullName.value == ''
+                || objectForm.phoneNumber.value == ''
+                || objectForm.email.value == ''
+                || objectForm.address.value == ''
+                || objectForm.city.value == ''){
+                    swal("Error","User data are required","error")
+                    return false
+                }
+                return true
+            }
+        </script>
+        <script>
+            const form = document.getElementById('payment-form');
+            const clientToken = "@ViewBag.ClientToken"
+
+            braintree.dropin.create({
+              authorization: clientToken,
+              container: '#dropin-container'
+            }, (error, dropinInstance) => {
+              if (error) console.error(error);
+
+              form.addEventListener('submit', event => {
+                event.preventDefault();
+
+                dropinInstance.requestPaymentMethod((error, payload) => {
+                  if (error) console.error(error);
+
+                  // Step four: when the user is ready to complete their
+                  //   transaction, use the dropinInstance to get a payment
+                  //   method nonce for the user's selected payment method, then add
+                  //   it a the hidden field before submitting the complete form to
+                  //   a server-side integration
+                  document.getElementById('nonce').value = payload.nonce;
+                  form.submit();
+                });
+              });
+            });
+        </script>
 }
 

@@ -64,7 +64,7 @@ namespace Rocosa.Controllers
         }
 
         [HttpPost,ActionName("Details")]
-        public IActionResult Detials(int id)
+        public IActionResult Detials(int id, DetailsViewModel detailsViewModel)
         {
             List<ShopCart> shopCartItems= new List<ShopCart>();
 
@@ -73,7 +73,7 @@ namespace Rocosa.Controllers
             {
                 shopCartItems = HttpContext.Session.Get<List<ShopCart>>(WebConstants.CartShopSession);
             }
-            shopCartItems.Add(new ShopCart { ProductId = id });
+            shopCartItems.Add(new ShopCart { ProductId = id, SquareMeter = detailsViewModel.Product.TempSquareMeter });
             HttpContext.Session.Set(WebConstants.CartShopSession, shopCartItems);
 
             return RedirectToAction("Index");

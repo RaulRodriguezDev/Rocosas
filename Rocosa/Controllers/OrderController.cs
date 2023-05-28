@@ -55,7 +55,7 @@ namespace Rocosa.Controllers
             }
             HttpContext.Session.Clear();
             HttpContext.Session.Set(WebConstants.CartShopSession, shopCartList);
-            HttpContext.Session.Set("SessionOrder", OrderViewModel.Order.Id);
+            HttpContext.Session.Set(WebConstants.SessionOrderId, OrderViewModel.Order.Id);
             return RedirectToAction("Index", "ShoppingCart");
         }
 

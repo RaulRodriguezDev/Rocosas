@@ -27,6 +27,23 @@
                                         <h3 class="text-success"></h3>
                                         <p class="text-secondary">@Html.Raw(Model.Product.ShortDescription)</p>
                                     </div>
+                                    @if (User.IsInRole(WebConstants.AdminRole))
+                                    {
+                                        <div class="col-12">
+                                            Square Meters: 
+                                        </div>
+                                        <div class="col-12">
+                                            @if (Model.ExistInCarShop)
+                                            {
+                                                <input asp-for="@Model.Product.TempSquareMeter" disabled class="form-control" />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="@Model.Product.TempSquareMeter" class="form-control" />
+                                            }
+                                            <span asp-validation-for="@Model.Product.TempSquareMeter" class="text-danger"></span>
+                                        </div>
+                                    }
 
                                 </div>
                             </div>

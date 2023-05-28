@@ -7,6 +7,11 @@ namespace Rocosa.Models
 {
     public class Product
     {
+        public Product()
+        {
+            TempSquareMeter = 1;
+        }
+
         [Key]
         public int Id { get; set; }
 
@@ -32,6 +37,10 @@ namespace Rocosa.Models
 
         [ForeignKey("ApplicationTypeId")]
         public virtual ApplicationType? ApplicationType { get; set; }
+
+        [Range(1,1000)]
+        [NotMapped]
+        public int TempSquareMeter { get; set; }
 
     }
 }
