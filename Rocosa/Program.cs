@@ -35,6 +35,11 @@ builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<IUserApplicationRepository, UserApplicationRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISaleDetailsRepository, SaleDetailsRepository>();
+builder.Services.AddAuthentication().AddFacebook(options =>
+{
+    options.AppId = "560195896043800";
+    options.AppSecret = "1b996ec0514fc68f624029c7f1014df2";
+});
 
 var app = builder.Build();
 
