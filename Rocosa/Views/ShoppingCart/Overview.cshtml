@@ -137,11 +137,11 @@
                         <div class="col-12 col-md-5 offset-md-7">
                             @if (User.IsInRole(WebConstants.AdminRole))
                             {
-                                <button type="submit" onclick="return validateData()" class="btn btn-success form-control">Send Sale</button>
+                                <button type="submit" onclick="return validateData('admin')" class="btn btn-success form-control">Send Sale</button>
                             }
                             else
                             {
-                                <button type="submit" onclick="return validateData()" class="btn btn-primary form-control">Send Order</button>
+                                <button type="submit" onclick="return validateData('user')" class="btn btn-primary form-control">Send Order</button>
                             }
                         </div>
                     </div>
@@ -164,7 +164,7 @@
                 city: document.getElementById('city')
             }
 
-            function validateData(){
+            function validateData(role){
                 if(objectForm.fullName.value == ''
                 || objectForm.phoneNumber.value == ''
                 || objectForm.email.value == ''
@@ -173,6 +173,8 @@
                     swal("Error","User data are required","error")
                     return false
                 }
+
+                role === 'user' && form.submit()
                 return true
             }
         </script>
