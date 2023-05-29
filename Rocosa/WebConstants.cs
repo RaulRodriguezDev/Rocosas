@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata;
+﻿using System.Collections.ObjectModel;
+using System.Reflection.Metadata;
 
 namespace Rocosa
 {
@@ -23,5 +24,11 @@ namespace Rocosa
         public const string SentStatus = "Sent";
         public const string CanceledStatus = "Canceled";
         public const string ReturnedStatus = "Returned";
+
+        public static readonly IEnumerable<string> StatusList = new ReadOnlyCollection<string>(
+            new List<String>
+            {
+                PendingStatus, ApprovedStatus, InProcessStatus, SentStatus, CanceledStatus, ReturnedStatus
+            });
     }
 }

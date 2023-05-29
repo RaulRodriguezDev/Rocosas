@@ -14,7 +14,9 @@
     <link rel="stylesheet" href="~/Rocosa.styles.css" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/21.1.35/fluent.css" />
     <script src="https://kit.fontawesome.com/a90da55013.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.syncfusion.com/ej2/21.1.35/dist/ej2.min.js"></script>
 </head>
 <body>
     <header>
@@ -55,11 +57,14 @@
                             </li>            
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Manage Orders
+                                    Managment
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Order" asp-action="Index">Overview</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Order" asp-action="Index">Orders</a>
+                                    </li>                                    
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index">Sales</a>
                                     </li>
                                 </ul>
                             </li>
@@ -108,5 +113,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <ejs-scripts></ejs-scripts>
 </body>
 </html>
